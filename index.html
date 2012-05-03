@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<script src="jquery.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8">
+  $(function(){
+    
+    var cropper = $('#cropper'),
+        cropArea = $('#crop-area'),
+        cropResizer = $('#crop-resizer'),
+        cropImage = $('#crop-image');
+    
+    
+    
+    function cropAreaResize() {
+      
+      resizer = $('<div id="crop-resizer"></div>')
+      
+      resizer.css({
+        'top':cropArea.position().top+cropArea.height(),
+        'left':cropArea.position().left+cropArea.width()
+      });
+      
+      resizer.bind('mousedown.resize', function(){
+        
+      });
+      
+      cropper.append(resizer);
+      
+    }
+    
+    function cropAreaMove(){      
+      
+      var borderThickness = parseInt(cropArea.css('border-left-width'));
+      cropArea.bind('mousedown.move',function(e){
+        e.preventDefault();        
+        var offsetTop = e.pageY - cropArea.offset().top,
+            offsetLeft = e.pageX - cropArea.offset().left;
+        console.log('top: '+offsetTop+' left: '+offsetLeft)
+        $(document).bind('mousemove.move',function(e){
+          cropArea.css({
+            top:e.pageY  - offsetTop,
+            left:e.pageX - offsetLeft
+          });
+          cropImage.css({
+            'margin-top': (cropArea.position().top*-1)-borderThickness,
+            'margin-left': (cropArea.position().left*-1)-borderThickness
+          });
+        });
+      }).bind('mouseup.move',function(){
+        $(document).unbind('mousemove.move');
+      });
+    }
+    
+    cropAreaMove();
+    cropAreaResize();
+
+  });
+</script>
+<div>
+  <style type="text/css">
+    #cropper {height:600px; width:800px; background:#eee;position:relative;}
+    #darkend-area {background:#000;float:left;}
+    #darkened-image {opacity:.7;}
+    
+    #crop-area {position:absolute; background:#f00; overflow:hidden; border: 1px solid #f0f; height:300px; width:200px;}
+    #crop-resizer {position:absolute; background:#f0f; height:7px; width:7px; z-index:100; margin-top:-3px; margin-left:-3px;}
+    
+    #crop-image {position:relative; z-index:1;}
+    .crop-lines {border:1px solid #0ff; position:relative; top:0; left:0; z-index:10}
+
+  </style>
+  <div id="cropper">
+    <div id="darkend-area">
+      <img id="darkened-image" src="hipster.jpg" alt="hipster"/>
+    </div>
+    <div id="crop-area">
+      <img id="crop-image" src="hipster.jpg" alt="hipster"/>
+      <div id="horizontal-lines" class="crop-lines"></div>
+      <div id="vertical-lines" class="crop-lines"></div>
+    </div>
+  </div>
+<div>
